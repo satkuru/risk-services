@@ -1,31 +1,26 @@
 package com.bank.risk.validation.steps;
 
-import com.bank.risk.validation.service.ValidationService;
 import com.bank.risk.validation.trades.Trade;
-import io.cucumber.java.Before;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -43,9 +38,6 @@ public class ValidationStepDefinitions {
     private final BlockingQueue<ConsumerRecord<String,Trade>> eligibleTradesQueue = new LinkedBlockingQueue<>();
     private final BlockingQueue<ConsumerRecord<String,Trade>> tradeManagementQueue = new LinkedBlockingQueue<>();
 
-    @Autowired
-    private EmbeddedKafkaBroker broker;
-
     @Value("${topic.name}")
     private String topic;
 
@@ -54,8 +46,8 @@ public class ValidationStepDefinitions {
 
     @Value("${trade.management}")
     private String tradeManagementTopic;
-    @Autowired
-    private ValidationService validationService;
+
+    private Map<Long,Trade> latestTradesReceived = new HashMap<>();
 
     @KafkaListener(topics = "eligibleTrades",groupId = "test-group-2")
     private void listenToEligibleTrades(ConsumerRecord<String, Trade> record) throws InterruptedException {
@@ -69,29 +61,14 @@ public class ValidationStepDefinitions {
         tradeManagementQueue.put(record);
     }
 
-    private Trade latestTradeReceived;
-    private Consumer<String, Trade> consumer;
-
-    @Before
-    public  void setupEnv(){
-//        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("test-group", "true", broker);
-//        consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-//        JsonDeserializer<Trade> deserializer = new JsonDeserializer<>(Trade.class);
-//        deserializer.setRemoveTypeHeaders(false);
-//        deserializer.addTrustedPackages("*");
-//        deserializer.setUseTypeMapperForKey(true);
-//        DefaultKafkaConsumerFactory<String, Trade> consumerFactory = new DefaultKafkaConsumerFactory<>(consumerProps,new StringDeserializer(),deserializer);
-//        consumer = consumerFactory.createConsumer();
-//        broker.consumeFromEmbeddedTopics(consumer,eligibleTradesTopic,tradeManagementTopic);
-    }
-
-    @When("a trade message with a product type {string} is received in valuation service")
-    public void aTradeMessageWithAProductTypeFXOptionIsReceivedInValuationService(String productType) {
-        log.info("Sending trade message with product type {}",productType);
-        Trade message = new Trade(1L,productType, "Abc123453se", LocalDate.of(2024,10,30),20_000_00L);
-        kafkaTemplate.send(topic,message);
-        latestTradeReceived = message;
-
+    @When("a trade message is received in valuation service")
+    public void aTradeMessageWithAProductTypeFXOptionIsReceivedInValuationService(DataTable table) {
+        List<Map<String, String>> rows = table.asMaps(String.class,String.class);
+        for(Map<String,String> row: rows){
+            Trade message = new Trade(Long.valueOf(row.get("id")), row.get("productType"), row.get("account"), LocalDate.parse(row.get("maturityDate"), DateTimeFormatter.ISO_LOCAL_DATE), Long.valueOf(row.get("notional")));
+            kafkaTemplate.send(topic,message);
+            latestTradesReceived.put(message.id(), message);
+        }
     }
 
     @Then("the trade should be classified as eligible")
@@ -100,8 +77,7 @@ public class ValidationStepDefinitions {
         Assertions.assertThat(singleRecord).isNotNull();
         Trade eligleTrade = singleRecord.value();
         Assertions.assertThat(eligleTrade).isNotNull();
-        Assertions.assertThat(eligleTrade).isEqualTo(latestTradeReceived);
-
+        Assertions.assertThat(latestTradesReceived.get(eligleTrade.id())).isEqualTo(eligleTrade);
     }
 
     @And("the trade message is send to trade control")
@@ -110,7 +86,8 @@ public class ValidationStepDefinitions {
         Assertions.assertThat(singleRecord).isNotNull();
         Trade sentToManagement = singleRecord.value();
         Assertions.assertThat(sentToManagement).isNotNull();
-        Assertions.assertThat(sentToManagement).isEqualTo(latestTradeReceived);
+        Assertions.assertThat(latestTradesReceived.get(sentToManagement.id())).isEqualTo(sentToManagement);
+
     }
 
     @Then("the trade should not be classified as eligible")

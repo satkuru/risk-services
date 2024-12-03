@@ -1,7 +1,7 @@
 topic:
   name: tradeHistory
 group:
-  id: trades
+  id: test-group-1
 trade:
   eligible: eligibleTrades
   management: tradeManagement
