@@ -7,9 +7,11 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,classes = ValidationApplication.class)
+@SpringBootTest(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = ValidationApplication.class)
 @CucumberContextConfiguration
-@EmbeddedKafka(topics = {"${trade.eligible}","${topic.name}"})
+@EmbeddedKafka(topics = {"${trade.eligible}","${trade.management}","${topic.name}"})
 
 @DirtiesContext
 @TestPropertySource(locations="classpath:application.yml")

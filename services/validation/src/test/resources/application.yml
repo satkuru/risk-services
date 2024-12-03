@@ -14,7 +14,7 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       group-id: test_group
       properties:
-        spring.json.trusted.packages: "*"
+        spring.json.trusted.packages: "com.bank.risk.validation.trades"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
