@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: validation
+server:
+  port: 8090
+topic:
+  name: tradeHistory
+group:
+  id: trades
