@@ -36,13 +36,13 @@ class ValidationServiceTest {
     @Autowired
     private EmbeddedKafkaBroker broker;
 
-    @Value("${topic.name}")
-    private String topic;
+    @Value("${topic.trades.incoming}")
+    private String topicIncoming;
 
-    @Value("${trade.eligible}")
+    @Value("${topic.trades.eligible}")
     private String topicEligible;
 
-    @Value("${trade.management}")
+    @Value("${topic.trades.management}")
     private String topicManager;
 
     @Autowired
@@ -67,7 +67,7 @@ class ValidationServiceTest {
     @Test
     void processEligibleTrade() {
         Trade message = new Trade(1L, "FX Option", "abcs1234d", LocalDate.of(2024,11,29) , 10_000_000L);
-        kafkaTemplate.send(topic,message);
+        kafkaTemplate.send(topicIncoming,message);
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {

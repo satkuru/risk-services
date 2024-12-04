@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class ValidationService {
     private final TradeProcessor processor;
 
-    @KafkaListener(topics = "${topic.name}", groupId = "${group.id}")
+    @KafkaListener(topics = "${topic.trades.incoming}", groupId = "${group.id}")
     public void process(Trade trade){
         log.info("trade message received {}",trade);
         processor.process(trade);

@@ -1,10 +1,13 @@
 topic:
-  name: tradeHistory
+  trades:
+    incoming: tradeHistory
+    eligible: eligibleTrades
+    management: tradeManagement
 group:
   id: test-group-1
 trade:
-  eligible: eligibleTrades
-  management: tradeManagement
+  eligible:
+    products: "FX Option, FX Spot, FX Forward, FX Structured Product"
 spring:
   kafka:
     bootstrap-servers: ${spring.embedded.kafka.brokers}

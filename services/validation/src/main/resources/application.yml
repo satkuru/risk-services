@@ -4,6 +4,13 @@ spring:
 server:
   port: 8090
 topic:
-  name: tradeHistory
+  trades:
+    incoming: tradeHistory
+    eligible: eligibleTrades
+    management: tradeManagement
 group:
-  id: trades
+  id: test-group-1
+trade:
+  eligible:
+    products: "FX Option, FX Spot, FX Forward, FX Structured Product"
+

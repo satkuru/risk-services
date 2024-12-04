@@ -14,7 +14,7 @@ import java.util.UUID;
 public class TradeManager {
     private final KafkaTemplate<String, Trade> kafkaTemplate;
 
-    @Value("${trade.management}")
+    @Value("${topic.trades.management}")
     private String topic;
 
     public void persist(Trade trade){

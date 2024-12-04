@@ -13,7 +13,7 @@ import java.util.UUID;
 public class TradePublisher {
     private final KafkaTemplate<String, Trade> kafkaTemplate;
 
-    @Value("${trade.eligible}")
+    @Value("${topic.trades.eligible}")
     private String topic;
 
     public String publish(Trade trade) {

@@ -38,13 +38,13 @@ public class ValidationStepDefinitions {
     private final BlockingQueue<ConsumerRecord<String,Trade>> eligibleTradesQueue = new LinkedBlockingQueue<>();
     private final BlockingQueue<ConsumerRecord<String,Trade>> tradeManagementQueue = new LinkedBlockingQueue<>();
 
-    @Value("${topic.name}")
+    @Value("${topic.trades.incoming}")
     private String topic;
 
-    @Value("${trade.eligible}")
+    @Value("${topic.trades.eligible}")
     private String eligibleTradesTopic;
 
-    @Value("${trade.management}")
+    @Value("${topic.trades.management}")
     private String tradeManagementTopic;
 
     private Map<Long,Trade> latestTradesReceived = new HashMap<>();

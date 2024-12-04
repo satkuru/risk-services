@@ -11,7 +11,7 @@ import org.springframework.test.context.TestPropertySource;
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = ValidationApplication.class)
 @CucumberContextConfiguration
-@EmbeddedKafka(topics = {"${trade.eligible}","${trade.management}","${topic.name}"})
+@EmbeddedKafka(topics = {"${topic.trades.eligible}","${topic.trades.management}","${topic.trades.incoming}"})
 @DirtiesContext
 @TestPropertySource(locations="classpath:application.yml")
 public class SpringIntegrationTest {
