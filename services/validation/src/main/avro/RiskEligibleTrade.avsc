@@ -1,0 +1,13 @@
+{
+  "namespace": "com.bank.risk.validation.avro",
+  "type": "record",
+  "name": "RiskTrade",
+  "fields": [
+    {
+      "name": "product","type": "string"
+    },
+    {
+      "name": "eligible","type": "boolean"
+    }
+  ]
+}
