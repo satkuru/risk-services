@@ -1,5 +1,6 @@
-package com.bank.risk.validation.steps;
+package com.bank.risk.validation.bdd.steps;
 
+import com.bank.risk.validation.bdd.config.SpringIntegrationTest;
 import com.bank.risk.validation.trades.Trade;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
@@ -8,14 +9,10 @@ import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,11 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@ContextConfiguration
-@EmbeddedKafka(partitions = 1, topics = {"tradeHistory","eligibleTrades","tradeManagement"})
-@TestPropertySource(properties = "spring.kafka.consumer.auto-offset-reset = earliest")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ValidationStepDefinitions {
+public class ValidationStepDefinitions extends SpringIntegrationTest {
     @Autowired
     KafkaTemplate<String, Trade> kafkaTemplate;
 

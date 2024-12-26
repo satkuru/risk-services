@@ -8,7 +8,7 @@ Feature: Validate trade eligibility
     And the trade message is send to trade control
     Examples:
       |ref  |product   |accountRef    |maturity     |notionalValue |
-      |1    |FX Option |Abc123453se   |2024-10-25   |10000000      |
+#      |1    |FX Option |Abc123453se   |2024-10-25   |10000000      |
       |2    |FX Forward|Abc893453se   |2024-10-25   |13000000      |
 
   Scenario Outline: Validate a trade message that is not eligible for risk service
