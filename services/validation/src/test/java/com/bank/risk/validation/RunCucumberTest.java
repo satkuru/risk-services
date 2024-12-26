@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-        features = "classpath:features/",
+        features = "src/test/resources/features",
         glue = {"com.bank.risk.demo.steps","com.bank.risk.validation.config"},
         plugin = {"pretty","html:target/cucumber-reports.html"}
 )

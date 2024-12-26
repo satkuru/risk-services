@@ -1,6 +1,12 @@
 spring:
   application:
     name: validation
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+    consumer:
+      security:
+        protocol: PLAINTEXT
 server:
   port: 8090
 topic:
