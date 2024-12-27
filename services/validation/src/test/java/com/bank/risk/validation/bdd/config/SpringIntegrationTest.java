@@ -4,6 +4,7 @@ import com.bank.risk.validation.ValidationApplication;
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.test.annotation.DirtiesContext;
 
 
 @SpringBootTest( webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -12,6 +13,7 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 @EmbeddedKafka( partitions = 1,
         topics = {"${topic.trades.eligible}","${topic.trades.management}","${topic.trades.incoming}"},
         controlledShutdown = true)
+@DirtiesContext
 public class SpringIntegrationTest {
 
 }
