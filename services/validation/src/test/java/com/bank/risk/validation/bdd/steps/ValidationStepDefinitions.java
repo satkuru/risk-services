@@ -40,7 +40,7 @@ public class ValidationStepDefinitions extends SpringIntegrationTest {
     @Value("${topic.trades.management}")
     private String tradeManagementTopic;
 
-    private Map<Long,Trade> latestTradesReceived = new HashMap<>();
+    private Map<String,Trade> latestTradesReceived = new HashMap<>();
 
     @KafkaListener(topics = "eligibleTrades",groupId = "test-group-2")
     private void listenToEligibleTrades(ConsumerRecord<String, Trade> record) throws InterruptedException {
@@ -58,9 +58,9 @@ public class ValidationStepDefinitions extends SpringIntegrationTest {
     public void aTradeMessageWithAProductTypeFXOptionIsReceivedInValuationService(DataTable table) {
         List<Map<String, String>> rows = table.asMaps(String.class,String.class);
         for(Map<String,String> row: rows){
-            Trade message = new Trade(Long.valueOf(row.get("id")), row.get("productType"), row.get("account"), LocalDate.parse(row.get("maturityDate"), DateTimeFormatter.ISO_LOCAL_DATE), Long.valueOf(row.get("notional")));
+            Trade message = new Trade(row.get("reference"), row.get("productType"), row.get("account"), LocalDate.parse(row.get("maturityDate"), DateTimeFormatter.ISO_LOCAL_DATE), Long.valueOf(row.get("notional")));
             kafkaTemplate.send(topic,message);
-            latestTradesReceived.put(message.id(), message);
+            latestTradesReceived.put(message.ref(), message);
         }
     }
 
@@ -70,7 +70,7 @@ public class ValidationStepDefinitions extends SpringIntegrationTest {
         Assertions.assertThat(singleRecord).isNotNull();
         Trade eligleTrade = singleRecord.value();
         Assertions.assertThat(eligleTrade).isNotNull();
-        Assertions.assertThat(latestTradesReceived.get(eligleTrade.id())).isEqualTo(eligleTrade);
+        Assertions.assertThat(latestTradesReceived.get(eligleTrade.ref())).isEqualTo(eligleTrade);
     }
 
     @And("the trade message is send to trade control")
@@ -79,7 +79,7 @@ public class ValidationStepDefinitions extends SpringIntegrationTest {
         Assertions.assertThat(singleRecord).isNotNull();
         Trade sentToManagement = singleRecord.value();
         Assertions.assertThat(sentToManagement).isNotNull();
-        Assertions.assertThat(latestTradesReceived.get(sentToManagement.id())).isEqualTo(sentToManagement);
+        Assertions.assertThat(latestTradesReceived.get(sentToManagement.ref())).isEqualTo(sentToManagement);
 
     }
 
