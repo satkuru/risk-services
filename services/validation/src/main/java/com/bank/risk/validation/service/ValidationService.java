@@ -8,6 +8,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,17 @@ public class ValidationService {
 
     public void listen(ConsumerRecord<String, GenericRecord> record){
         String key = record.key();
-        String product = (String) record.value().get("product");
+        Trade trade = toTrade(record.value());
+        processor.process(trade);
+    }
+
+    private Trade toTrade(GenericRecord record){
+        String reference = (String) record.get("reference");
+        String product = (String) record.get("product");
+        String account = (String) record.get("account");
+        String maturityStr = (String) record.get("maturity");
+        LocalDate maturityDate = LocalDate.parse(maturityStr);
+        Long notional = (Long) record.get("notional");
+        return new Trade(reference,product,account,maturityDate,notional);
     }
 }

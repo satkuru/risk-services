@@ -1,4 +1,9 @@
 .idea
 *.iml
 ../../.idea/aws.xml
+src/main/java/com/bank/pts/*
+../../.DS_Store
+../.DS_Store
+.DS_Store
+
 

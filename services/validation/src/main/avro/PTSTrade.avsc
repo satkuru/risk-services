@@ -1,0 +1,34 @@
+{
+  "namespace": "com.bank.pts.trades",
+  "type": "record",
+  "name": "PtsTrade",
+  "fields": [
+    {
+      "name": "reference","type": "string",
+      "default": null
+    },
+    {
+      "name": "product",
+      "type": "string",
+      "default": null
+    },
+    {
+      "name": "account",
+      "type": "string",
+      "default": null
+    },
+    {
+      "name": "maturity",
+      "type": {
+        "type": "int",
+        "logicalType": "date"
+      },
+      "default": null
+    },
+    {
+      "name": "notional",
+      "type": "long",
+      "default": null
+    }
+  ]
+}
