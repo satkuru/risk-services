@@ -6,6 +6,13 @@ Instruction:
 5. run the tradeEligibity.feature file from test area
 
 
+To test retry and dead letter topic
+1. make sure docker is installed in your machine
+2. cd into risk-service folder
+3. run the following docker command : docker compose up -d
+4. make sure the container is up  and kafaka broker and zookeeper is also up
+5. Start the ValidationApplication, make sure no errors in the log
+6. open a terminal window/git-bash shell and send the following curl command
 
 test post endpoint:
-curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"tradeRef":"abcdef","productType":"FX Spot", "account":"abcd12345","maturity":"2025-01-14", "notionalAmount":"1000" }' http://localhost:8090/api/v1/trades
+curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"tradeRef":"abcdef","productType":"FX Swap", "account":"abcd12345","maturity":"2025-01-14", "notionalAmount":"1000" }' http://localhost:8090/api/v1/trades
