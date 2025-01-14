@@ -7,10 +7,17 @@ spring:
     consumer:
       security:
         protocol: PLAINTEXT
+    listener:
+      retry:
+        enabled: true
+      dlt:
+        enabled: true
+        strategy: fail
 server:
   port: 8090
 topic:
   trades:
+    input: tradeInput
     incoming: tradeHistory
     eligible: eligibleTrades
     management: tradeManagement
