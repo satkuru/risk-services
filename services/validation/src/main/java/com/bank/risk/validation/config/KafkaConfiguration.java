@@ -1,18 +1,16 @@
 package com.bank.risk.validation.config;
 
 import com.bank.risk.validation.trades.Trade;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.kafka.annotation.EnableKafkaRetryTopic;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.*;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
@@ -20,6 +18,7 @@ import java.util.Map;
 
 @Configuration
 @EnableKafka
+@Slf4j
 public class KafkaConfiguration {
     @Value("${topic.trades.input}")
     private String tradeTopic;
@@ -28,37 +27,7 @@ public class KafkaConfiguration {
         return new DefaultKafkaProducerFactory<>(loadProducerConfigs());
     }
 
-    @Bean
-    public ConsumerFactory<String,Trade> consumerFactory(){
-        return new DefaultKafkaConsumerFactory<>(loadConsumerConfigs());
-    }
 
-    @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Trade> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, Trade> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
-        factory.setConcurrency(1);
-        return factory;
-    }
-    private Map<String, Object> loadConsumerConfigs() {
-        Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,"localhost:9092");
-        props.put(ConsumerConfig.GROUP_ID_CONFIG,"test-group-1");
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        props.put(JsonDeserializer.TRUSTED_PACKAGES,"*");
-        return props;
-    }
-
-//    @Bean
-//    public RetryTopicConfiguration myRetryTopic(KafkaTemplate<String, Trade> template) {
-//        return RetryTopicConfigurationBuilder
-//                .newInstance()
-//                .maxAttempts(4)
-//                .fixedBackOff(3000)
-//                .includeTopic(tradeTopic)
-//                .create(template);
-//    }
 
     private Map<String, Object> loadProducerConfigs() {
         Map<String,Object> props = new HashMap<>();
@@ -73,4 +42,37 @@ public class KafkaConfiguration {
         return new KafkaTemplate<String, Trade>(producerFactory());
     }
 
+
+    @Bean
+    public KafkaAdmin admin() {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        return new KafkaAdmin(configs);
+    }
+
+    //Create the required topics beforehand
+    @Bean
+    public KafkaAdmin.NewTopics tradeTopics() {
+        return new KafkaAdmin.NewTopics(
+                TopicBuilder.name("tradeInput")
+                        .partitions(3)
+                        .build(),
+                TopicBuilder.name("tradeInput-retry")
+                        .partitions(3)
+                        .build(),
+                TopicBuilder.name("tradeInput-dlt")
+                        .partitions(3)
+                        .build(),
+                TopicBuilder.name("tradeHistory")
+                        .replicas(1)
+                        .build(),
+                TopicBuilder.name("eligibleTrades")
+                        .partitions(3)
+                        .build(),
+                TopicBuilder.name("tradeManagement")
+                        .partitions(3)
+                        .build());
+    }
+
 }
+

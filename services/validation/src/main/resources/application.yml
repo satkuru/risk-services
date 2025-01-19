@@ -1,18 +1,18 @@
 spring:
   application:
     name: validation
+  main:
+    allow-bean-definition-overriding: true
   kafka:
     bootstrap-servers:
       - localhost:9092
     consumer:
+      properties:
+        allow.auto.create.topics: true
       security:
         protocol: PLAINTEXT
     listener:
-      retry:
-        enabled: true
-      dlt:
-        enabled: true
-        strategy: fail
+      missing-topics-fatal: false
 server:
   port: 8090
 topic:

@@ -21,20 +21,20 @@ public class TradeService {
     @DltHandler
     public void handleDLTMessage(Trade trade) {
 
-        log.info("Trade with reference {} is rejected",trade);
+        log.error("Trade with reference {} is rejected",trade);
         // ... message processing, persistence, etc
     }
 
     @RetryableTopic(
-            attempts = "3",
-            backoff = @Backoff(delay = 2000, multiplier = 2, maxDelay = 5000),
-            autoCreateTopics = "true",
-            dltTopicSuffix = ".DLT")
+            attempts = "4",
+            backoff = @Backoff(delay = 1000),
+            autoCreateTopics = "false"
+    )
     @KafkaListener(topics = "${topic.trades.input}",containerFactory = "kafkaListenerContainerFactory")
     public void process(@Payload Trade trade){
         log.info("Trade received for processing: {} ",trade);
         if(!eligibleProducts.contains(trade.productType())){
-            throw new RuntimeException("trade with ineligible product type received"+trade.ref());
+            throw new RuntimeException("trade with ineligible product type received: "+trade.ref());
         }
 
     }
