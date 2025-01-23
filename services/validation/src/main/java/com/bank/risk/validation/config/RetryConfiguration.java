@@ -11,15 +11,15 @@ import org.springframework.kafka.retrytopic.*;
 //@EnableKafkaRetryTopic
 public class RetryConfiguration  extends RetryTopicConfigurationSupport {
 
-    @Bean
-    public RetryTopicConfiguration myRetryTopic(KafkaTemplate<String, Trade> template){
-        return RetryTopicConfigurationBuilder
-                .newInstance()
-                .fixedBackOff(3_000)
-                .maxAttempts(5)
-                .useSingleTopicForSameIntervals()
-                .create(template);
-    }
+//    @Bean
+//    public RetryTopicConfiguration myRetryTopic(KafkaTemplate<String, Trade> template){
+//        return RetryTopicConfigurationBuilder
+//                .newInstance()
+////                .fixedBackOff(3_000)
+//                .maxAttempts(5)
+//                .useSingleTopicForSameIntervals()
+//                .create(template);
+//    }
 
     @Override
     protected RetryTopicComponentFactory createComponentFactory(){

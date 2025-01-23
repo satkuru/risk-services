@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class ValidationController {
 
-    @Value("${topic.trades.input}")
+    @Value("${topic.trades.incoming}")
     private String tradeTopic;
 
     private final KafkaTemplate<String,Trade> kafkaTemplate;

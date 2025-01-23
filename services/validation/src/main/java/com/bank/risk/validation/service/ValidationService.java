@@ -6,6 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.RetryableTopic;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -13,12 +17,20 @@ import java.time.LocalDate;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@EnableRetry
 public class ValidationService {
     private final TradeProcessor processor;
 
+        @RetryableTopic(
+            attempts = "2",
+            backoff = @Backoff(delay = 1000),
+            autoCreateTopics = "false"
+    )
     @KafkaListener(topics = "${topic.trades.incoming}", groupId = "${group.id}")
     public void process(Trade trade){
         log.info("trade message received {}",trade);
+        System.out.println("trade message received");
+        callCalculation();
         processor.process(trade);
     }
 
@@ -36,5 +48,11 @@ public class ValidationService {
         LocalDate maturityDate = LocalDate.parse(maturityStr);
         Long notional = (Long) record.get("notional");
         return new Trade(reference,product,account,maturityDate,notional);
+    }
+
+    @Retryable(maxAttempts = 2)
+    private void callCalculation(){
+        System.out.println("calling calculator services");
+        throw new RuntimeException("Failed to call calculator service");
     }
 }

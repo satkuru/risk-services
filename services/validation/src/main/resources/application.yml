@@ -8,11 +8,27 @@ spring:
       - localhost:9092
     consumer:
       properties:
-        allow.auto.create.topics: true
+        allow.auto.create.topics: false
       security:
         protocol: PLAINTEXT
     listener:
       missing-topics-fatal: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 server:
   port: 8090
 topic:

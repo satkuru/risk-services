@@ -18,18 +18,18 @@ import java.util.List;
 public class TradeService {
     @Value("${trade.eligible.products}")
     private List<String> eligibleProducts;
-    @DltHandler
+    @DltHandler( )
     public void handleDLTMessage(Trade trade) {
 
         log.error("Trade with reference {} is rejected",trade);
         // ... message processing, persistence, etc
     }
 
-    @RetryableTopic(
-            attempts = "4",
-            backoff = @Backoff(delay = 1000),
-            autoCreateTopics = "false"
-    )
+//    @RetryableTopic(
+//            attempts = "4",
+//            backoff = @Backoff(delay = 1000),
+//            autoCreateTopics = "false"
+//    )
     @KafkaListener(topics = "${topic.trades.input}",containerFactory = "kafkaListenerContainerFactory")
     public void process(@Payload Trade trade){
         log.info("Trade received for processing: {} ",trade);
