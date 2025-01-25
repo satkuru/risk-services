@@ -22,13 +22,13 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class ValidationController {
 
-    @Value("${topic.trades.input}")
+    @Value("${topic.trades.incoming}")
     private String tradeTopic;
 
     private final KafkaTemplate<String,Trade> kafkaTemplate;
     @PostMapping
     public ResponseEntity<String> create(@RequestBody TradeDto payload){
-        log.info("Sending trade to topic:"+tradeTopic);
+        log.info("Publishing trade to topic:"+tradeTopic);
         Trade trade =  toTrade(payload);
         CompletableFuture<SendResult<String, Trade>> future = kafkaTemplate.send(tradeTopic,trade);
         future.whenComplete((result, ex) -> {

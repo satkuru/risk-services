@@ -1,0 +1,8 @@
+docker-compose exec kafka bash -c "kafka-topics --create --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 --topic tradeInput"
+docker-compose exec kafka bash -c "kafka-topics --create --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 --topic tradeInput-retry"
+docker-compose exec kafka bash -c "kafka-topics --create --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 --topic tradeInput-dlt"
+docker-compose exec kafka bash -c "kafka-topics --create --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 --topic tradeHistory"
+docker-compose exec kafka bash -c "kafka-topics --create --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 --topic tradeHistory-retry"
+docker-compose exec kafka bash -c "kafka-topics --create --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 --topic tradeHistory-dlt"
+docker-compose exec kafka bash -c "kafka-topics --create --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 --topic eligibleTrades"
+docker-compose exec kafka bash -c "kafka-topics --create --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 --topic tradeManagement"

@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.RetryableTopic;
+import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,10 +17,18 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class ValidationService {
     private final TradeProcessor processor;
+    private final LimitService limitService;
 
+    @RetryableTopic(
+            attempts = "2",
+            backoff = @Backoff(delay = 1000),
+            autoCreateTopics = "false",
+            include = {RuntimeException.class}
+    )
     @KafkaListener(topics = "${topic.trades.incoming}", groupId = "${group.id}")
     public void process(Trade trade){
         log.info("trade message received {}",trade);
+        limitService.checkLimit(trade);
         processor.process(trade);
     }
 
